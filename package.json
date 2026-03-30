@@ -1,0 +1,22 @@
+{
+  "name": "thebridge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm -w server run dev",
+    "dev:admin": "npm -w admin run dev",
+    "dev:widget": "npm -w widget run dev",
+    "build": "npm -w server run build && npm -w admin run build && npm -w widget run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "private": "true",
+  "workspaces": [
+    "server",
+    "admin",
+    "widget"
+  ]
+}

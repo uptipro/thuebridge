@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+
+# env
+.env
+
+# Prisma / SQLite
+server/dev.db
+server/dev.db-journal
+server/prisma/migrations/**/migration_lock.toml
+
+# logs
+*.log
+
+# OS
+.DS_Store

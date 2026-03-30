@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ImpactLevel {
+  LOSING_LEADS
+  DELAYING_FOLLOWUPS
+  JUST_ANNOYING
+}
+
+enum ReportStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Application {
+  id        String           @id @default(cuid())
+  name      String
+  apiKey    String           @unique
+  reports   FeedbackReport[]
+  modules   Module[]
+  forms     Form[]           @relation("FormToApplication")
+  createdAt DateTime         @default(now())
+}
+
+model Module {
+  id                      String                     @id @default(cuid())
+  appId                   String
+  application             Application                @relation(fields: [appId], references: [id], onDelete: Cascade)
+  value                   String
+  label                   String
+  conditionalFields       ModuleConditionalField[]
+  createdAt               DateTime                   @default(now())
+
+  @@unique([appId, value])
+  @@index([appId])
+}
+
+model ModuleConditionalField {
+  id        String   @id @default(cuid())
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name      String   // 'leadId' or 'propertyId'
+  label     String   // 'Lead ID' or 'Property ID'
+  createdAt DateTime @default(now())
+
+  @@index([moduleId])
+}
+
+model Form {
+  id          String        @id @default(cuid())
+  appId       String
+  application Application   @relation("FormToApplication", fields: [appId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  isActive    Boolean       @default(false)
+  fields      FormField[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([appId])
+}
+
+model FormField {
+  id            String   @id @default(cuid())
+  formId        String
+  form          Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  fieldType     String   // 'text', 'textarea', 'email', 'number', 'select', 'radio', 'checkbox'
+  label         String
+  name          String   // form field name
+  required      Boolean  @default(true)
+  placeholder   String?
+  options       Json?    // JSON array for select/radio/checkbox
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([formId])
+}
+
+model FeedbackReport {
+  id           String        @id @default(cuid())
+  appId        String
+  application  Application   @relation(fields: [appId], references: [id])
+
+  userInfo     Json?
+  module       String
+  description  String
+  impactLevel  ImpactLevel
+  metadataJson Json?
+  status       ReportStatus  @default(NEW)
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([appId])
+  @@index([status])
+  @@index([impactLevel])
+  @@index([createdAt])
+}
