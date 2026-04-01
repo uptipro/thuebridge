@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import { prisma } from './db.js';
+import { Prisma } from '@prisma/client';
 import { requireApiKey } from './apiKeyAuth.js';
 import './types.js';
 import crypto from 'node:crypto';
@@ -417,7 +418,7 @@ app.post('/api/v1/apps/:id/forms', async (req: Request, res: Response) => {
             name: f.name,
             required: f.required ?? true,
             placeholder: f.placeholder ?? null,
-            options: f.options ? JSON.stringify(f.options) : null,
+            options: f.options ? JSON.stringify(f.options) : Prisma.JsonNull,
             order: f.order ?? idx,
           })),
         },
@@ -520,7 +521,7 @@ app.patch('/api/v1/forms/:id', async (req: Request, res: Response) => {
                 name: f.name,
                 required: f.required ?? true,
                 placeholder: f.placeholder ?? null,
-                options: f.options ? JSON.stringify(f.options) : null,
+                options: f.options ? JSON.stringify(f.options) : Prisma.JsonNull,
                 order: f.order ?? idx,
               })),
             }
