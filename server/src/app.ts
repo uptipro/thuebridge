@@ -515,16 +515,16 @@ app.patch('/api/v1/forms/:id', async (req: Request, res: Response) => {
         isActive: parsed.data.isActive,
         fields: parsed.data.fields
           ? {
-              create: parsed.data.fields.map((f, idx) => ({
-                fieldType: f.fieldType,
-                label: f.label,
-                name: f.name,
-                required: f.required ?? true,
-                placeholder: f.placeholder ?? null,
-                options: f.options ? JSON.stringify(f.options) : Prisma.JsonNull,
-                order: f.order ?? idx,
-              })),
-            }
+            create: parsed.data.fields.map((f, idx) => ({
+              fieldType: f.fieldType,
+              label: f.label,
+              name: f.name,
+              required: f.required ?? true,
+              placeholder: f.placeholder ?? null,
+              options: f.options ? JSON.stringify(f.options) : Prisma.JsonNull,
+              order: f.order ?? idx,
+            })),
+          }
           : undefined,
       },
       include: {
