@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 type FormField = {
   id: string;
-  fieldType: 'text' | 'textarea' | 'email' | 'number' | 'select' | 'radio' | 'checkbox';
+  fieldType:
+    | "text"
+    | "textarea"
+    | "email"
+    | "number"
+    | "select"
+    | "radio"
+    | "checkbox";
   label: string;
   name: string;
   required: boolean;
@@ -31,13 +38,13 @@ type Props = {
   userInfo?: UserInfo;
 };
 
-const defaultApiBaseUrl = 'http://localhost:4000';
+const defaultApiBaseUrl = "http://localhost:4000";
 
 function parseOptions(options: unknown): string[] {
   if (Array.isArray(options)) {
     return options;
   }
-  if (typeof options === 'string') {
+  if (typeof options === "string") {
     try {
       const parsed = JSON.parse(options);
       return Array.isArray(parsed) ? parsed : [];
@@ -58,10 +65,10 @@ function FormFieldInput({
   onChange: (value: string | string[]) => void;
 }) {
   const commonClasses =
-    'w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-400';
+    "w-full rounded border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-400";
 
   switch (field.fieldType) {
-    case 'text':
+    case "text":
       return (
         <input
           type="text"
@@ -72,7 +79,7 @@ function FormFieldInput({
           required={field.required}
         />
       );
-    case 'textarea':
+    case "textarea":
       return (
         <textarea
           className={`${commonClasses} min-h-24 resize-y`}
@@ -82,7 +89,7 @@ function FormFieldInput({
           required={field.required}
         />
       );
-    case 'email':
+    case "email":
       return (
         <input
           type="email"
@@ -93,7 +100,7 @@ function FormFieldInput({
           required={field.required}
         />
       );
-    case 'number':
+    case "number":
       return (
         <input
           type="number"
@@ -104,7 +111,7 @@ function FormFieldInput({
           required={field.required}
         />
       );
-    case 'select':
+    case "select":
       return (
         <select
           className={commonClasses}
@@ -120,11 +127,14 @@ function FormFieldInput({
           ))}
         </select>
       );
-    case 'radio':
+    case "radio":
       return (
         <div className="space-y-2">
           {parseOptions(field.options).map((opt) => (
-            <label key={opt} className="flex items-center gap-2 text-sm text-slate-700">
+            <label
+              key={opt}
+              className="flex items-center gap-2 text-sm text-slate-700"
+            >
               <input
                 type="radio"
                 name={field.name}
@@ -137,11 +147,14 @@ function FormFieldInput({
           ))}
         </div>
       );
-    case 'checkbox':
+    case "checkbox":
       return (
         <div className="space-y-2">
           {parseOptions(field.options).map((opt) => (
-            <label key={opt} className="flex items-center gap-2 text-sm text-slate-700">
+            <label
+              key={opt}
+              className="flex items-center gap-2 text-sm text-slate-700"
+            >
               <input
                 type="checkbox"
                 value={opt}
@@ -171,7 +184,9 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
 
   const [open, setOpen] = useState(false);
   const [forms, setForms] = useState<Form[]>([]);
-  const [formValues, setFormValues] = useState<Record<string, string | string[]>>({});
+  const [formValues, setFormValues] = useState<
+    Record<string, string | string[]>
+  >({});
   const [loadingForms, setLoadingForms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -193,7 +208,7 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
     try {
       const res = await fetch(`${baseUrl}/api/v1/apps/${appId}/forms`, {
         headers: {
-          'x-api-key': apiKey,
+          "x-api-key": apiKey,
         },
       });
 
@@ -209,7 +224,7 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
         initializeFormValues(activeForm);
       }
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to load forms');
+      setError(e instanceof Error ? e.message : "Failed to load forms");
     } finally {
       setLoadingForms(false);
     }
@@ -218,7 +233,7 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
   function initializeFormValues(form: Form) {
     const values: Record<string, string | string[]> = {};
     form.fields.forEach((field) => {
-      values[field.name] = field.fieldType === 'checkbox' ? [] : '';
+      values[field.name] = field.fieldType === "checkbox" ? [] : "";
     });
     setFormValues(values);
   }
@@ -250,18 +265,18 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
       appId,
       userInfo,
       module: selectedForm.name,
-      description: selectedForm.description || '',
-      impactLevel: 'JUST_ANNOYING',
+      description: selectedForm.description || "",
+      impactLevel: "JUST_ANNOYING",
       metadata,
     };
 
     try {
       const res = await fetch(`${baseUrl}/api/v1/report`, {
-        method: 'POST',
-        mode: 'cors',
+        method: "POST",
+        mode: "cors",
         headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
         },
         body: JSON.stringify(payload),
       });
@@ -281,32 +296,36 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
         }
       }, 2000);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to send feedback');
+      setError(e instanceof Error ? e.message : "Failed to send feedback");
     } finally {
       setSubmitting(false);
     }
   }
 
-  const isFormValid = selectedForm && 
+  const isFormValid =
+    selectedForm &&
     selectedForm.fields
-      .filter(f => f.required)
-      .every(f => {
+      .filter((f) => f.required)
+      .every((f) => {
         const val = formValues[f.name];
-        return val && (Array.isArray(val) ? val.length > 0 : String(val).trim().length > 0);
+        return (
+          val &&
+          (Array.isArray(val) ? val.length > 0 : String(val).trim().length > 0)
+        );
       });
 
   return (
     <>
       <button
         type="button"
-        className="fixed bottom-6 right-6 rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow disabled:opacity-50"
+        className="fixed bottom-6 right-6 z-[9999] rounded-full bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow disabled:opacity-50"
         onClick={() => setOpen(true)}
       >
         Send Feedback
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-[9999]">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={() => (submitting ? null : setOpen(false))}
@@ -315,7 +334,9 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
           <div className="relative mx-auto mt-24 w-[92vw] max-w-lg rounded-lg bg-white p-5 shadow">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-base font-semibold text-slate-900">Send Feedback</div>
+                <div className="text-base font-semibold text-slate-900">
+                  Send Feedback
+                </div>
                 <div className="mt-0.5 text-sm text-slate-600">
                   Help us improve your experience.
                 </div>
@@ -342,26 +363,38 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
             )}
 
             {loadingForms && (
-              <div className="mt-4 text-sm text-slate-600">Loading forms...</div>
+              <div className="mt-4 text-sm text-slate-600">
+                Loading forms...
+              </div>
             )}
 
             {!loadingForms && forms.length === 0 && (
-              <div className="mt-4 text-sm text-slate-600">No forms available.</div>
+              <div className="mt-4 text-sm text-slate-600">
+                No forms available.
+              </div>
             )}
 
             {!loadingForms && forms.length > 0 && selectedForm && (
               <>
                 {userInfo?.email && (
                   <div className="mt-4">
-                    <label className="text-sm font-medium text-slate-900">Email</label>
-                    <div className="mt-2 text-sm text-slate-600">{userInfo.email}</div>
+                    <label className="text-sm font-medium text-slate-900">
+                      Email
+                    </label>
+                    <div className="mt-2 text-sm text-slate-600">
+                      {userInfo.email}
+                    </div>
                   </div>
                 )}
 
                 {userInfo?.name && (
                   <div className="mt-4">
-                    <label className="text-sm font-medium text-slate-900">Name</label>
-                    <div className="mt-2 text-sm text-slate-600">{userInfo.name}</div>
+                    <label className="text-sm font-medium text-slate-900">
+                      Name
+                    </label>
+                    <div className="mt-2 text-sm text-slate-600">
+                      {userInfo.name}
+                    </div>
                   </div>
                 )}
 
@@ -369,12 +402,17 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
                   <div key={field.id} className="mt-4">
                     <label className="text-sm font-medium text-slate-900">
                       {field.label}
-                      {field.required && <span className="text-rose-600">*</span>}
+                      {field.required && (
+                        <span className="text-rose-600">*</span>
+                      )}
                     </label>
                     <div className="mt-2">
                       <FormFieldInput
                         field={field}
-                        value={formValues[field.name] || (field.fieldType === 'checkbox' ? [] : '')}
+                        value={
+                          formValues[field.name] ||
+                          (field.fieldType === "checkbox" ? [] : "")
+                        }
                         onChange={(val) =>
                           setFormValues({
                             ...formValues,
@@ -401,7 +439,7 @@ export function FeedbackWidget({ appId, apiKey, apiBaseUrl, userInfo }: Props) {
                     onClick={submit}
                     disabled={submitting || !isFormValid || success}
                   >
-                    {submitting ? 'Sending…' : 'Send'}
+                    {submitting ? "Sending…" : "Send"}
                   </button>
                 </div>
 
