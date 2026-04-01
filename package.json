@@ -7,7 +7,8 @@
     "dev": "npm -w server run dev",
     "dev:admin": "npm -w admin run dev",
     "dev:widget": "npm -w widget run dev",
-    "build": "npm -w server run build && npm -w admin run build && npm -w widget run build"
+    "build": "npm -w server run build && npm -w admin run build && npm -w widget run build",
+    "start": "npm -w server run start"
   },
   "keywords": [],
   "author": "",
