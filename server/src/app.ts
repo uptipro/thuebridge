@@ -1,5 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { z } from 'zod';
 import { prisma } from './db.js';
@@ -10,7 +12,10 @@ import crypto from 'node:crypto';
 
 dotenv.config();
 
-const corsOriginsRaw = process.env.CORS_ORIGINS ?? '*';
+const corsOriginsRaw = process.env.CORS_ORIGINS;
+if (!corsOriginsRaw) {
+  throw new Error('CORS_ORIGINS environment variable is required (comma-separated list of allowed origins)');
+}
 const corsOrigins = corsOriginsRaw
   .split(',')
   .map((s: string) => s.trim())
@@ -18,6 +23,8 @@ const corsOrigins = corsOriginsRaw
 
 export const app = express();
 
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false }));
 app.use(express.json({ limit: '1mb' }));
 
 app.use(
